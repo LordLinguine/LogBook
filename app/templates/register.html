@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="form-container">
+    <h2>Register</h2>
+    <form method="POST">
+        <div class="form-group">
+            <input type="text" name="username" placeholder="Username" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <input type="email" name="email" placeholder="Email" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <input type="password" id="password" name="password" placeholder="Password" class="form-control" required>
+            <!-- <small class="form-hint">
+                At least 8 characters, 1 uppercase, 1 number, and 1 special character.
+            </small> -->
+        </div>
+
+        <div class="form-group">
+            <input type="password" name="confirm_password" placeholder="Confirm Password" class="form-control" required>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn">Register</button>
+            <a href="{{ url_for('auth.login') }}" class="btn">Back to Login</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const passwordInput = document.querySelector("#password");
+        const hint = document.createElement("div");
+        hint.style.fontSize = "0.9em";
+        hint.style.marginTop = "5px";
+        // hint.innerHTML = "❌ Must have 1 uppercase, 1 number, 1 special character";
+        passwordInput.insertAdjacentElement("afterend", hint);
+
+        passwordInput.addEventListener("input", function () {
+            const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
+            if (regex.test(passwordInput.value)) {
+                hint.innerHTML = "Password meets requirements";
+                hint.style.color = "green";
+            } else {
+                hint.innerHTML = "Must have at least 8 characters, 1 uppercase, 1 number, 1 special character";
+                hint.style.color = "red";
+            }
+        });
+    });
+</script>
+
+{% endblock %}

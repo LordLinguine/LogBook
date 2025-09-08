@@ -1,0 +1,25 @@
+{% for entry in entries.items %}
+    <div class="entry-card">
+        <h4>{{ entry.title }}</h4>
+        <small>{{ entry.date_posted.strftime("%Y-%m-%d %H:%M") }}</small>
+        <p>{{ entry.content }}</p>
+
+        {% if entry.tags %}
+            <p class="tags">
+                Tags:
+                {% for tag in entry.tags.split(',') %}
+                    <a href="{{ url_for('main.dashboard', tag=tag.strip()) }}" class="tag-btn">{{ tag.strip() }}</a>
+                {% endfor %}
+            </p>
+        {% endif %}
+
+        <div class="entry-actions">
+            <a href="{{ url_for('main.edit_entry', entry_id=entry.id ) }}" class="btn">Edit</a>
+            <form action="{{ url_for('main.delete_entry', entry_id=entry.id) }}" method="POST" style="display:inline;">
+                <button type="submit" class="btn delete-btn" onclick="return confirm('Are you sure you want to delete this entry?');">Delete</button>
+
+            </form>
+        </div>
+            
+    </div>
+{% endfor %}

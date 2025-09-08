@@ -1,0 +1,319 @@
+/* ===============================
+   Root Variables
+================================ */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    --card-bg: #f9f9f9;
+    --card-border: #ddd;
+    --link-color: #007bff;
+    --link-hover: #0056b3;
+    --btn-bg: #007bff;
+    --btn-hover: #0056b3;
+    --delete-bg: #dc3545;
+    --delete-hover: #a71d2a;
+    --tag-bg: #6c757d;
+    --tag-hover: #495057;
+}
+
+/* Dark Mode Variables */
+body.dark-mode {
+    --bg-color: #1e1e1e;
+    --text-color: #f5f5f5;
+    --card-bg: #2c2c2c;
+    --card-border: #444;
+    --link-color: #80b3ff;
+    --link-hover: #3399ff;
+    --btn-bg: #3399ff;
+    --btn-hover: #267acc;
+    --delete-bg: #ff5c5c;
+    --delete-hover: #cc4444;
+    --tag-bg: #555;
+    --tag-hover: #777;
+}
+
+/* ===============================
+   Global
+================================ */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin-top: 70px; /* push content below fixed header */
+    transition: background-color 0.3s, color 0.3s;
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+a:hover {
+    color: var(--link-hover);
+    text-decoration: underline;
+}
+
+/* ===============================
+   Header / Navbar
+================================ */
+/* ===============================
+   Header / Navbar
+================================ */
+header {
+    background-color: var(--btn-bg);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    transition: background-color 0.3s;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: white; /* make sure title is white */
+}
+
+header nav a {
+    margin-left: 15px;
+    font-weight: bold;
+    color: white;          /* 🔹 force white for nav links */
+    transition: color 0.2s;
+}
+
+header nav a:hover {
+    color: #ddd;           /* 🔹 lighter gray on hover */
+}
+
+
+/* ===============================
+   Buttons
+================================ */
+.btn,
+form.filter-form button,
+form.filter-form a.btn {
+    display: inline-block;
+    padding: 6px 12px;
+    margin: 8px 8px 0 0;
+    background-color: var(--btn-bg);
+    color: #fff !important;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+}
+.btn:hover,
+form.filter-form button:hover,
+form.filter-form a.btn:hover {
+    background-color: var(--btn-hover);
+}
+
+.delete-btn {
+    background-color: var(--delete-bg);
+}
+.delete-btn:hover {
+    background-color: var(--delete-hover);
+}
+
+.tag-btn,
+.tag-link {
+    display: inline-block;
+    background-color: var(--tag-bg);
+    color: #fff;
+    padding: 4px 8px;
+    margin: 2px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    transition: background 0.2s, color 0.2s;
+}
+.tag-btn:hover,
+.tag-link:hover {
+    background-color: var(--tag-hover);
+    color: #fff;
+}
+
+/* ===============================
+   Cards / Containers
+================================ */
+.entry-card,
+.profile-card,
+.recent-entries,
+.dashboard-container,
+.form-container {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.entry-card:hover {
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+/* ===============================
+   Forms
+================================ */
+.form-control,
+.content-box {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+    margin-bottom: 15px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-control:focus,
+.content-box:focus {
+    border-color: var(--btn-bg);
+    box-shadow: 0 0 4px rgba(0,123,255,0.25);
+    outline: none;
+}
+.content-box { min-height: 200px; line-height: 1.5; resize: vertical; }
+
+/* ===============================
+   Flash Messages
+================================ */
+.flash { padding: 10px; border-radius: 5px; margin-bottom: 10px; }
+.flash.success { background-color: #d4edda; color: #155724; }
+.flash.error, .flash.danger { background-color: #f8d7da; color: #721c24; }
+.flash.info { background-color: #cce5ff; color: #004085; }
+
+/* ===============================
+   Profile + Cover
+================================ */
+.cover-container {
+    width: 100%;
+    height: 250px;
+    border-radius: 10px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    margin-bottom: 75px;
+}
+.cover-upload-form {
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+}
+.btn-cover {
+    padding: 5px 10px;
+    background-color: rgba(0,0,0,0.6);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.btn-cover:hover { background-color: rgba(0,0,0,0.8); }
+
+.profile-picture {
+    width: 150px; height: 150px;
+    border-radius: 50%; border: 4px solid white;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+.profile-picture:hover { transform: scale(1.05); }
+
+/* ===============================
+   Responsive
+================================ */
+@media (max-width: 768px) {
+    .profile-main { flex-direction: column; align-items: center; }
+    .profile-picture-container { margin-bottom: 15px; }
+    .user-info { text-align: center; }
+    .stats { justify-content: center; }
+}
+
+/* ===============================
+   Dark Mode Toggle Switch
+================================ */
+.toggle-container {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+}
+
+.toggle-container input {
+    display: none; /* hide the checkbox */
+}
+
+.toggle-switch {
+    position: relative;
+    width: 50px;
+    height: 25px;
+    background: #ccc;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.toggle-switch::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 21px;
+    height: 21px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+/* Checked state */
+.toggle-container input:checked + .toggle-switch {
+    background: #4a90e2; /* blue when active */
+}
+
+.toggle-container input:checked + .toggle-switch::after {
+    transform: translateX(25px);
+}
+
+/* Header layout fix */
+header {
+    background-color: #007BFF;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Group nav + toggle on the right */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Dark mode text + switch inline */
+.dark-mode-toggle-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dark-mode-toggle-wrapper span {
+    font-size: 0.9rem;
+    color: white;
+}
+
+.dark-mode-row {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* centers under nav */
+    margin-top: 10px;
+    gap: 8px;
+}
+
+#mode-icon {
+    font-size: 1.3rem;
+    cursor: pointer;
+}
+

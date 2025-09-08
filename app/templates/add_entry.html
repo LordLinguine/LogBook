@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="form-container">
+
+
+    <h2>Add New Entry</h2>
+
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            {{ form.title.label }}<br>
+            {{ form.title(class="form-control") }}
+            {% for error in form.title.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.content.label }}<br>
+            {{ form.content(class="content-box") }}
+            {% for error in form.content.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.tags.label }}<br>
+            {{ form.tags(class="form-control") }}
+            <p class="form-hint">Separate tags with commas (e.g. personal, work)</p>
+            {% for error in form.tags.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn">Save</button>
+            <a href="{{ url_for('main.dashboard') }}" class="btn">Back to Dashboard</a>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

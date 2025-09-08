@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 style="margin-bottom: 15px;">Add Progress for <span style="color:#4f46e5;">{{ goal.name }}</span></h2>
+
+<p style="color:#6b7280; margin-bottom: 20px;">
+Update your progress with a new value, note, or even an image. Every entry helps you see how far you’ve come!
+</p>
+
+<form method="POST" enctype="multipart/form-data" 
+      style="max-width: 600px; background: #f9fafb; padding: 20px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.08);">
+
+  <!-- Date field -->
+  <div style="margin-bottom: 16px;">
+    <label for="date" style="display:block; font-weight:600; margin-bottom:6px;">Date</label>
+    <input type="date" id="date" name="date" class="form-control" 
+           style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:8px;" required>
+  </div>
+
+  <!-- Value field -->
+  <div style="margin-bottom: 16px;">
+    <label for="value" style="display:block; font-weight:600; margin-bottom:6px;">Value ({{ goal.unit or "" }})</label>
+    <input type="number" step="any" id="value" name="value" class="form-control" 
+           placeholder="Enter your progress value" 
+           style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:8px;">
+  </div>
+
+  <!-- Note field -->
+  <div style="margin-bottom: 16px;">
+    <label for="note" style="display:block; font-weight:600; margin-bottom:6px;">Note</label>
+    <textarea id="note" name="note" rows="3" class="form-control" 
+              placeholder="Add a quick note about today’s progress…" 
+              style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:8px;"></textarea>
+  </div>
+
+  <!-- Image upload -->
+  <div style="margin-bottom: 20px;">
+    <label for="image" style="display:block; font-weight:600; margin-bottom:6px;">Upload an image (optional)</label>
+    <input type="file" id="image" name="image" accept="image/*"
+           style="width:100%; padding:6px; border:1px solid #d1d5db; border-radius:8px;">
+  </div>
+
+  <!-- Buttons -->
+  <div style="display:flex; gap:10px;">
+    <button type="submit" class="btn" style="background:#4f46e5; color:#fff; flex:1;">Save Progress</button>
+    <a href="{{ url_for('main.goal_detail', goal_id=goal.id) }}" 
+       class="btn" style="background:#6b7280; flex:1;">Cancel</a>
+  </div>
+</form>
+
+{% endblock %}

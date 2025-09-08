@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Your Goals</h2>
+
+<a href="{{ url_for('main.add_goal') }}" class="btn">+ Add New Goal</a>
+
+{% if goals %}
+  <ul>
+    {% for goal in goals %}
+      <li>
+        <strong>{{ goal.name }}</strong> - Target: {{ goal.target_value }} {{ goal.unit }}
+        <a href="{{ url_for('main.goal_detail', goal_id=goal.id) }}">View</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>You have no goals yet.</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Logbook</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const toggle = document.getElementById("dark-mode-toggle");
+        const modeIcon = document.getElementById("mode-icon");
+
+        // Load preference
+        if (localStorage.getItem("darkMode") === "enabled") {
+            document.body.classList.add("dark-mode");
+            toggle.checked = true;
+            modeIcon.textContent = "🌙";
+        }
+
+        function updateModeIcon() {
+            modeIcon.textContent = toggle.checked ? "🌙" : "🌞";
+        }
+
+        toggle.addEventListener("change", () => {
+            if (toggle.checked) {
+                document.body.classList.add("dark-mode");
+                localStorage.setItem("darkMode", "enabled");
+            } else {
+                document.body.classList.remove("dark-mode");
+                localStorage.setItem("darkMode", "disabled");
+            }
+            updateModeIcon();
+        });
+
+        modeIcon.addEventListener("click", () => {
+            toggle.checked = !toggle.checked;
+            toggle.dispatchEvent(new Event("change"));
+        });
+    });
+</script>
+
+<body>
+    <!-- Header / Navigation -->
+    <header>
+        <h1>Logbook</h1>
+
+        <nav>
+            <a href="{{ url_for('main.home') }}">Home</a>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main.profile') }}">Profile</a>
+                <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('main.list_goals') }}">Goals</a>
+                <a href="{{ url_for('auth.logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}">Login</a>
+                <a href="{{ url_for('auth.register') }}">Register</a>
+            {% endif %}
+        </nav>
+
+        <!-- Dark/Light Mode Row (below nav) -->
+        <div class="dark-mode-row">
+            <span id="mode-icon">🌞</span>
+            <div class="toggle-container">
+                <input type="checkbox" id="dark-mode-toggle">
+                <label for="dark-mode-toggle" class="toggle-switch"></label>
+            </div>
+            <span>Dark / Light Mode</span>
+        </div>
+    </header>
+
+    <!-- Flash Messages -->
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <p class="flash {{ category }}">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Page Content -->
+    <main>
+        <div class="dashboard-container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+</body>
+</html>

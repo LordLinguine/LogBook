@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Dashboard</h2>
+<p>Welcome, {{ user.username }}!</p>
+
+<!-- Filter form -->
+<form method="GET" action="{{ url_for('main.dashboard') }}" class="filter-form">
+
+    <label for="q">Search:</label>
+    <input type="text" id="q" name="q" placeholder="Search entries..." value="{{ request.args.get('q', '') }}">
+
+    <label for="tag">Tag:</label>
+    <input type="text" id="tag" name="tag" placeholder="e.g. Personal" value="{{ request.args.get('tag', '') }}">
+
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date" value="{{ request.args.get('date', '') }}">
+
+    <button type="submit">Filter</button>
+    <a href="{{ url_for('main.dashboard') }}" class="btn">Clear</a>
+</form>
+
+<h3>Your Log Entries</h3>
+
+<!-- Add new entry button -->
+<div style="margin-bottom: 25px; margin-left: 325px;">
+    <a href="{{ url_for('main.add_entry')}}" class="btn"> + Add New Entry</a>
+</div>
+
+{% if entries.items %}
+    <!-- Container where entries get loaded; JS will append more here -->
+    <div id="entries-container" class="entry-list" data-total-pages="{{ entries.pages }}">
+        {% include "partials/entries_list.html" %}
+    </div>
+
+    <!-- Loader shown during fetch -->
+    <div id="loading" style="display:none; text-align:center; margin:20px;">
+        <p>Loading more entries...</p>
+    </div>
+
+{% else %}
+    <p>You have no entries yet. </p>
+{% endif %}
+
+<script>
+window.addEventListener("DOMContentLoaded", function () {
+
+    const entryContainer = document.getElementById("entries-container");
+    const loader = document.getElementById("loading");
+
+    let currentPage = 1;
+    let loading = false;
+
+    // TOTAL pages available from Flask pagination (from data attribute)
+    const totalPages = Number(entryContainer.dataset.totalPages || 1);
+
+    // URL to fetch the next entries page
+    const entriesPartialUrl = "{{ url_for('main.entries_partial') }}";
+
+    async function loadMoreEntries() {
+        if (loading) return;
+        if (currentPage >= totalPages) return; // Stop if last page
+
+        loading = true;
+        loader.style.display = "block";
+
+        currentPage++;
+
+        try {
+            const response = await fetch(
+                `${entriesPartialUrl}?page=${currentPage}&tag={{ request.args.get('tag', '') }}&date={{ request.args.get('date', '') }}`
+            );
+
+            if (response.ok) {
+                const html = await response.text();
+
+                // Temporary delay for testing loader
+                await new Promise(resolve => setTimeout(resolve, 1000)); // 1000ms delay
+
+                if (html.trim() !== "") {
+                    // Convert HTML string to DOM elements
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = html;
+
+                    // Add 'new-entry' class to each new card for fade-in
+                    tempDiv.querySelectorAll('.entry-card').forEach(card => {
+                        card.classList.add('new-entry'); // start invisible
+                    });
+
+                    // Append new entries to container
+                    while (tempDiv.firstChild) {
+                        entryContainer.appendChild(tempDiv.firstChild);
+                    }
+
+                    // Trigger reflow and remove 'new-entry' to start fade-in
+                    entryContainer.querySelectorAll('.new-entry').forEach(card => {
+                        requestAnimationFrame(() => {
+                            card.classList.remove('new-entry');
+                        });
+                    });
+                } else {
+                    // No more entries, stop scroll listener
+                    window.removeEventListener("scroll", handleScroll);
+                }
+            } else {
+                console.error("Failed to fetch entries:", response.status);
+            }
+        } catch (err) {
+            console.error("Error loading entries:", err);
+        } finally {
+            loader.style.display = "none";
+            loading = false;
+        }
+    }
+
+    function handleScroll() {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+            loadMoreEntries();
+        }
+    }
+
+    window.addEventListener("scroll", handleScroll);
+});
+</script>
+
+{% endblock %}
