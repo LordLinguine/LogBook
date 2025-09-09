@@ -12,6 +12,8 @@ from .forms import ProfileForm
 import os, secrets
 from PIL import Image
 from flask import current_app
+import base64
+from io import BytesIO
 
 
 main = Blueprint("main", __name__)
@@ -414,3 +416,43 @@ def add_goal_progress(goal_id):
 
     return render_template("goals/add_progress.html", goal=goal)
 
+@main.route("/edit_pictures_ajax", methods=["POST"])
+@login_required
+def edit_pictures_ajax():
+    profile_image = request.files.get("profile_image")
+    cover_image = request.files.get("cover_image")
+
+    if profile_image:
+        profile_filename = save_profile_image(profile_image)  # only 1 argument
+        current_user.profile_image = profile_filename
+
+    if cover_image:
+        cover_filename = save_cover_image(cover_image)  # only 1 argument
+        current_user.cover_image = cover_filename
+
+    db.session.commit()
+
+    return jsonify({
+        "profile_image_url": url_for("static", filename="profile_pics/" + (current_user.profile_image or "default_profile.png")),
+        "cover_image_url": url_for("static", filename="cover_pics/" + (current_user.cover_image or "default_cover.jpg")),
+    })
+
+@main.route("/upload_profile_image", methods=["POST"])
+@login_required
+def upload_profile_image():
+    data = request.get_json()
+    image_data = data["image"].split(",")[1]  # remove base64 prefix
+    image_bytes = base64.b64decode(image_data)
+
+    # Save to file system
+    filename = f"profile_{current_user.id}.png"
+    filepath = os.path.join(main.static_folder, "uploads", filename)
+
+    img = Image.open(BytesIO(image_bytes))
+    img.save(filepath, "PNG")
+
+    # Update user profile
+    current_user.profile_image = filename
+    db.session.commit()
+
+    return jsonify({"success": True})

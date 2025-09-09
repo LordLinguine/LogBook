@@ -1,22 +1,27 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2>Edit Profile</h2>
-<form method="POST" enctype="multipart/form-data">
-    <label for="username">Username</label>
-    <input type="text" name="username" value="{{ user.username }}" required>
+<div class="form-container">
+    <h2>Edit Profile</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <label for="username">Username</label>
+        <input type="text" name="username" value="{{ user.username }}" required>
 
-    <label for="email">Email</label>
-    <input type="email" name="email" value="{{ user.email }}" required>
+        <label for="email">Email</label>
+        <input type="email" name="email" value="{{ user.email }}" required>
 
-    <label for="profile_image">Profile Picture</label>
-    <input type="file" name="profile_image" accept="image/*">
+        <!-- <label for="profile_image">Profile Picture</label>
+        <input type="file" name="profile_image" accept="image/*">
 
 
-    <label for="cover_image">Cover Banner</label>
-    <input type="file" name="cover_image" accept="image/*">
+        <label for="cover_image">Cover Banner</label>
+        <input type="file" name="cover_image" accept="image/*"> -->
 
-    <button type="submit">Save Changes</button>
-</form>
+        <br>
+
+        <button type="submit" class="btn">Save Changes</button>
+    </form>
+</div>
+    
 
 {% endblock %}

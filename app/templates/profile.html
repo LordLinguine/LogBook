@@ -3,19 +3,15 @@
 
 <h2>{{ user.username }}'s Profile</h2>
 
-
 <!-- Cover Banner -->
 <div class="cover-container"
-     style="background-image: url('{{ url_for('static', filename='cover_pics/' ~ (user.cover_image or 'default_cover.jpg')) }}');">
+     style="background-image: url('{{ url_for('static', filename='cover_pics/' ~ (user.cover_image or 'default_cover.jpg')) }}'); height:200px; background-size:cover; background-position:center;">
 </div>
-
-
-
-
 
 <!-- Profile Section -->
 <div class="profile-header" style="display: flex; align-items: center; margin-top: -60px; padding-left: 20px;">
-    <img src="{{ url_for('static', filename='profile_pics/' ~ user.profile_image) }}" 
+    <img id="profilePicMain"
+         src="{{ url_for('static', filename='profile_pics/' ~ (user.profile_image or 'default_profile.png')) }}" 
          alt="Profile picture" class="profile-pic"
          style="width:120px; height:120px; border-radius:50%; border:4px solid white;">
 
@@ -23,7 +19,9 @@
         <h2>{{ user.username }}</h2>
         <p><strong>Email:</strong> {{ user.email }}</p>
         <p><strong>Member since:</strong> {{ user.date_joined.strftime('%B %d, %Y') }}</p>
-        <a href="{{ url_for('main.edit_profile') }}" class="btn">Edit Profile</a>
+        <!-- Two buttons -->
+        <a href="{{ url_for('main.edit_profile') }}" class="btn">Edit Profile Info</a>
+        <button onclick="openModal()" class="btn">Edit Pictures</button>
     </div>
 </div>
 
@@ -43,7 +41,6 @@
                 No tags yet
             {% endif %}
         </li>
-
     </ul>
 </div>
 
@@ -66,5 +63,192 @@
         <p>No entries yet. <a href="{{ url_for('main.add_entry') }}">Add your first entry</a></p>
     {% endif %}
 </div>
+
+<!-- ======================= MODAL ======================= -->
+<div id="editModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h3>Edit Profile & Cover Pictures</h3>
+
+    <form id="editPicturesForm" enctype="multipart/form-data">
+        <!-- Profile picture -->
+        <div>
+            <label>Current Profile Picture</label><br>
+            <img id="profilePreview" src="{{ url_for('static', filename='profile_pics/' ~ (user.profile_image or 'default_profile.png')) }}" 
+                 alt="Profile Preview" style="width:100px; height:100px; border-radius:50%; margin-bottom:10px;">
+            <input type="file" id="profileInput" name="profile_image" accept="image/*">
+        </div>
+
+        <hr>
+
+        <!-- Cover picture -->
+        <div>
+            <label>Current Cover Picture</label><br>
+            <img id="coverPreview" src="{{ url_for('static', filename='cover_pics/' ~ (user.cover_image or 'default_cover.jpg')) }}" 
+                 alt="Cover Preview" style="width:250px; height:100px; object-fit:cover; margin-bottom:10px;">
+            <input type="file" id="coverInput" name="cover_image" accept="image/*">
+        </div>
+
+        <hr>
+
+        <button type="submit" class="btn">Save Changes</button>
+    </form>
+  </div>
+</div>
+
+<!-- ======================= CROPPER MODAL ======================= -->
+<div id="cropperModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeCropper()">&times;</span>
+    <h3 id="cropperTitle">Crop Image</h3>
+    <div style="width:300px; height:300px; margin:auto;">
+      <img id="cropperImage" style="max-width:100%; display:block;">
+    </div>
+    <button class="btn" onclick="applyCrop()">Apply Crop</button>
+  </div>
+</div>
+
+<!-- ======================= STYLES ======================= -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet"/>
+<style>
+.modal {
+  display: none; 
+  position: fixed; 
+  z-index: 1000; 
+  left: 0; top: 0;
+  width: 100%; height: 100%; 
+  background-color: rgba(0,0,0,0.6);
+}
+.modal-content {
+  background: white; 
+  margin: 5% auto; 
+  padding: 20px;
+  width: 400px; 
+  border-radius: 8px;
+  text-align: center;
+}
+.close {
+  float: right;
+  font-size: 22px;
+  cursor: pointer;
+}
+</style>
+
+<!-- ======================= SCRIPT ======================= -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script>
+let cropper;
+let currentTarget = null; // "profile" or "cover"
+const cropperImage = document.getElementById("cropperImage");
+
+function openModal() {
+    document.getElementById("editModal").style.display = "block";
+}
+function closeModal() {
+    document.getElementById("editModal").style.display = "none";
+}
+function openCropper() {
+    document.getElementById("cropperModal").style.display = "block";
+}
+function closeCropper() {
+    document.getElementById("cropperModal").style.display = "none";
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+}
+
+// Handle profile input
+document.getElementById("profileInput").addEventListener("change", function(e) {
+    handleFileSelect(e, "profile");
+});
+
+// Handle cover input
+document.getElementById("coverInput").addEventListener("change", function(e) {
+    handleFileSelect(e, "cover");
+});
+
+function handleFileSelect(e, target) {
+    const file = e.target.files[0];
+    if (!file) return;
+    currentTarget = target;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        cropperImage.src = ev.target.result;
+        document.getElementById("cropperTitle").innerText = target === "profile" ? "Crop Profile Picture" : "Crop Cover Picture";
+        openCropper();
+        setTimeout(() => {
+            cropper = new Cropper(cropperImage, {
+                aspectRatio: target === "profile" ? 1 : 16/9,
+                viewMode: 1,
+                dragMode: 'move',
+                background: false,
+                guides: false,
+                center: true,
+                highlight: false,
+                cropBoxResizable: true
+            });
+        }, 100);
+    };
+    reader.readAsDataURL(file);
+}
+
+function applyCrop() {
+    if (!cropper || !currentTarget) return;
+
+    let width = currentTarget === "profile" ? 300 : 800;
+    let height = currentTarget === "profile" ? 300 : 450;
+
+    cropper.getCroppedCanvas({
+        width: width,
+        height: height,
+        imageSmoothingQuality: 'high'
+    }).toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        if (currentTarget === "profile") {
+            document.getElementById("profilePreview").src = url;
+            replaceFile("profileInput", blob, "profile_cropped.png");
+        } else {
+            document.getElementById("coverPreview").src = url;
+            replaceFile("coverInput", blob, "cover_cropped.png");
+        }
+        closeCropper();
+    });
+}
+
+function replaceFile(inputId, blob, fileName) {
+    const fileInput = document.getElementById(inputId);
+    const newFile = new File([blob], fileName, { type: "image/png" });
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(newFile);
+    fileInput.files = dataTransfer.files;
+}
+
+// Handle AJAX save
+document.getElementById("editPicturesForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    const response = await fetch("{{ url_for('main.edit_pictures_ajax') }}", {
+        method: "POST",
+        body: formData
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+
+        if (data.profile_image_url) {
+            document.getElementById("profilePicMain").src = data.profile_image_url + "?t=" + new Date().getTime();
+        }
+        if (data.cover_image_url) {
+            document.querySelector(".cover-container").style.backgroundImage = "url('" + data.cover_image_url + "?t=" + new Date().getTime() + "')";
+        }
+
+        closeModal();
+    } else {
+        alert("Error saving images.");
+    }
+});
+</script>
 
 {% endblock %}
