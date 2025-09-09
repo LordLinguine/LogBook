@@ -76,8 +76,9 @@ def dashboard():
 
     # Load first page only
     entries = query.order_by(Entry.date_posted.desc()).paginate(page=page, per_page=5)
+    goals = Goal.query.filter_by(user_id=current_user.id).all()
 
-    return render_template("dashboard.html", entries=entries, user=current_user)
+    return render_template("dashboard.html", entries=entries, goals=goals, user=current_user)
 
 
 
